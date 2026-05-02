@@ -58,7 +58,7 @@ jobs:
               CONFIG_PATH="./configs/$CONFIG_TYPE/$CONFIG_FILE"
               # Strip BOM
               sed -i '1s/^\xEF\xBB\xBF//' "$CONFIG_PATH"
-              jq -s '[.[][]]' "$CONFIG_PATH" >> $GITHUB_OUTPUT
+              jq '[if type == "array" then .[] else . end]' "$CONFIG_PATH" >> $GITHUB_OUTPUT
               echo "EOF" >> $GITHUB_OUTPUT
               echo "buildfile=$CONFIG_FILE" >> $GITHUB_OUTPUT
             else
@@ -81,17 +81,14 @@ jobs:
 
             repos_json="[]"
             for process_file in $FILES; do
-              echo "Checking: $process_file"
-              # Strip BOM if present (in-place)
               sed -i '1s/^\xEF\xBB\xBF//' "$process_file"
               if ! jq empty "$process_file" >/dev/null 2>&1; then
                 echo "[+] Invalid JSON: $process_file"
-                jq '.' "$process_file"
                 exit 1
-              else
-                echo "[-] Valid: $process_file"
-                repos_json=$(jq -s 'add' <(echo "$repos_json") "$process_file")
               fi
+              repos_json=$(jq -s '
+                .[0] + [.[1] | if type == "array" then .[] else . end]
+              ' <(echo "$repos_json") "$process_file")
             done
 
             echo "repos<<EOF" >> $GITHUB_OUTPUT
