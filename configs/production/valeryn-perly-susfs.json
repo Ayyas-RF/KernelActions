@@ -19,7 +19,7 @@
     "setupArg": "main", 
     "setupName": "KernelSU", 
     "needPatch": true, 
-    "susfsLink": "https://raw.githubusercontent.com/wodanesdag/susfs4ksu/refs/heads/next-4.19/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" 
+    "susfsLink": "https://gitlab.com/simonpunk/susfs4ksu/-/raw/kernel-4.19/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch?ref_type=heads" 
   },
   "toolchains": [
     {
